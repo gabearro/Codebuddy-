@@ -1,46 +1,58 @@
 {
-  "manifest_version": 2,
-  "name": "Sample WebExtension",
-  "version": "0.0.0",
+  "name": "Codebuddy",
+  "version": "1.0.2",
 
   "icons": {
     "16": "assets/icons/favicon-16.png",
-    "32": "assets/icons/favicon-32.png",
     "48": "assets/icons/favicon-48.png",
     "128": "assets/icons/favicon-128.png"
   },
-  "description": "Sample description",
-  "homepage_url": "https://github.com/abhijithvijayan/web-extension-starter",
-  "short_name": "Sample Name",
-
+  "description": "Extension that extracts page data for use by the Codebuddy AI",
+  "homepage_url": "https://codebuddy.ca/",
+  "short_name": "Codebuddy",
   "permissions": [
     "activeTab",
     "storage",
+    "scripting",
+    "offscreen",
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "contextMenus",
+    "clipboardWrite",
+    "notifications"
   ],
+  "__chrome|opera|edge__manifest_version": 3,
+  "__firefox__manifest_version": 2,
+  "__chrome|opera|edge|dev__content_security_policy": {
+    "extension_pages": "script-src 'self' http://localhost:8097; object-src 'self'"
+  },
 
-  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "__chrome|opera|edge|prod__content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
 
-  "__chrome|firefox__author": "abhijithvijayan",
+  "__firefox|dev__content_security_policy": "script-src 'self' http://localhost:8097; object-src 'self'",
+  "__firefox|prod__content_security_policy": "script-src 'self'; object-src 'self'",
+
+
+  "__chrome|firefox__author": "Codebuddy",
   "__opera__developer": {
-    "name": "abhijithvijayan"
+    "name": "Codebuddy"
   },
 
   "__firefox__applications": {
     "gecko": {
-      "id": "{754FB1AD-CC3B-4856-B6A0-7786F8CA9D17}"
+      "id": "{754FB1AD-CC3B-4856-B6A0-7786F8CA9D17}",
+      "strict_min_version": "52.0"
     }
   },
 
-  "__chrome__minimum_chrome_version": "49",
-  "__opera__minimum_opera_version": "36",
+  "__chrome__minimum_chrome_version": "88",
+  "__opera__minimum_opera_version": "74",
 
   "browser_action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "assets/icons/favicon-16.png",
-      "32": "assets/icons/favicon-32.png",
       "48": "assets/icons/favicon-48.png",
       "128": "assets/icons/favicon-128.png"
     },
@@ -49,27 +61,11 @@
     "__firefox__browser_style": false
   },
 
-  "__chrome|opera__options_page": "options.html",
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true,
-    "__chrome__chrome_style": false
-  },
 
   "background": {
-    "scripts": [
+    "__firefox__scripts": [
       "js/background.bundle.js"
     ],
-    "__chrome|opera__persistent": false
-  },
-
-  "content_scripts": [{
-    "matches": [
-      "http://*/*",
-      "https://*/*"
-    ],
-    "js": [
-      "js/contentScript.bundle.js"
-    ]
-  }]
+    "__chrome|opera|edge__service_worker": "js/backgroundWorker.bundle.js"
+  }
 }

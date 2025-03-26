@@ -9,7 +9,7 @@ const ExtensionReloader = require('webpack-ext-reloader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WextManifestWebpackPlugin = require('wext-manifest-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const viewsPath = path.join(__dirname, 'views');
 const sourcePath = path.join(__dirname, 'source');
@@ -60,9 +60,11 @@ module.exports = {
   entry: {
     manifest: path.join(sourcePath, 'manifest.json'),
     background: path.join(sourcePath, 'Background', 'index.ts'),
-    contentScript: path.join(sourcePath, 'ContentScript', 'index.ts'),
-    popup: path.join(sourcePath, 'Popup', 'index.tsx'),
-    options: path.join(sourcePath, 'Options', 'index.tsx'),
+    backgroundWorker: path.join(sourcePath, 'Background', "serviceWorker", 'backgroundworker.js'),
+    offscreen: path.join(sourcePath, 'Background', 'serviceWorker', 'offscreen.js'),
+    // contentScript: path.join(sourcePath, 'ContentScript', 'index.ts'),
+    // popup: path.join(sourcePath, 'Popup', 'index.tsx'),
+    // options: path.join(sourcePath, 'Options', 'index.tsx'),
   },
 
   output: {
@@ -152,21 +154,14 @@ module.exports = {
       verbose: true,
     }),
     new HtmlWebpackPlugin({
-      template: path.join(viewsPath, 'popup.html'),
+      template: path.join(viewsPath, 'offscreen.html'),
       inject: 'body',
-      chunks: ['popup'],
+      chunks: ['offscreen'],
       hash: true,
-      filename: 'popup.html',
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(viewsPath, 'options.html'),
-      inject: 'body',
-      chunks: ['options'],
-      hash: true,
-      filename: 'options.html',
+      filename: 'offscreen.html',
     }),
     // write css file(s) to build folder
-    new MiniCssExtractPlugin({filename: 'css/[name].css'}),
+    // new MiniCssExtractPlugin({filename: 'css/[name].css'}),
     // copy static assets
     new CopyWebpackPlugin({
       patterns: [{from: 'source/assets', to: 'assets'}],
@@ -176,22 +171,26 @@ module.exports = {
   ],
 
   optimization: {
-    minimize: true,
+    minimize: false,
     minimizer: [
       new TerserPlugin({
+        extractComments: false,
         parallel: true,
+        test: /\.js$/,
+        exclude: /\.html$/,
         terserOptions: {
           format: {
             comments: false,
           },
-        },
-        extractComments: false,
-      }),
-      new OptimizeCSSAssetsPlugin({
-        cssProcessorPluginOptions: {
-          preset: ['default', {discardComments: {removeAll: true}}],
+          compress: true,
+          mangle: true,
         },
       }),
+      // new OptimizeCSSAssetsPlugin({
+      //   cssProcessorPluginOptions: {
+      //     preset: ['default', {discardComments: {removeAll: true}}],
+      //   },
+      // }),
       new FilemanagerPlugin({
         events: {
           onEnd: {
